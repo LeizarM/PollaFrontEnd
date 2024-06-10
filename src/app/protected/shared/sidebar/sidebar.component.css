@@ -1,0 +1,14 @@
+.mat-list-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+.mat-list-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mat-icon {
+  font-size: 24px;
+  margin-right: 1rem;
+}

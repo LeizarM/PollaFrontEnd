@@ -7,12 +7,11 @@ const routes: Routes = [
     loadChildren: () => import('../app/auth/auth.module').then( m => m.AuthModule )
   },
 
-  /* {
-    path: 'bosque',
+  {
+    path: 'polla',
     loadChildren: () => import('./protected/protected.module').then( m => m.ProtectedModule ),
-    canLoad: [ AuthGuard ],
-    canActivate: [ AuthGuard ]
-  }, */
+
+  },
   {
     path: '**',
     redirectTo: 'auth',

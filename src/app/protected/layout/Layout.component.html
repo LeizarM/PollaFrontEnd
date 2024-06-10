@@ -1,0 +1,14 @@
+<div class="layout-wrapper">
+  <app-navbar (toggleSidebarForMe)="sidenav.toggle()"></app-navbar>
+  <mat-sidenav-container class="h-screen flex">
+    <mat-sidenav #sidenav mode="side" opened class="w-64 bg-gray-800 text-white">
+      <app-sidebar></app-sidebar>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <div class="layout-main-container p-4">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  <div class="layout-mask"></div>
+</div>

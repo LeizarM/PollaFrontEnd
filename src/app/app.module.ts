@@ -17,6 +17,7 @@ import { MaterialModule } from './material/material.module';
     HttpClientModule,
     AppRoutingModule,
     MaterialModule,
+
   ],
   providers: [
 
