@@ -1,26 +1,47 @@
+<div role="alert">
+  <div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+    Danger
+  </div>
+  <div class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+    <p>Something not ideal might be happening.</p>
+  </div>
+</div>
+
+
+
 <div class="container mx-auto p-4">
   <h2 class="text-2xl font-bold mb-4 text-center">Partidos del Torneo {{ codTorneo }}</h2>
-  <div *ngIf="matches.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <div *ngFor="let match of matches" class="mb-4">
-      <mat-card class="bg-white hover:bg-gray-100 transition duration-300 ease-in-out">
-        <mat-card-content class="bg-white">
-          <p class="text-green-700 font-bold">FECHA PARTIDO: <span class="text-gray-800">{{ match.fechaCadena }}</span></p>
-          <div class="my-2">
-            <mat-radio-button  [name]="'radioGroup[' + match.codPartido  + ']'"   value="{{match.codEquipo1}}"> <p class="text-blue-600 font-bold">EQUIPO A: <span class="text-gray-800">{{ match.equipo1 }}</span></p></mat-radio-button>
-            <mat-radio-button  [name]="'radioGroup[' +  match.codPartido + ']'"   value="0"> <p class="text-red-600 font-bold">EMPATE: <span class="text-gray-800">{{match.empate}}</span></p></mat-radio-button>
-            <mat-radio-button  [name]="'radioGroup[' +  match.codPartido + ']'"   value="{{match.codEquipo2}}"> <p class="text-blue-600 font-bold">EQUIPO B: <span class="text-gray-800">{{ match.equipo2 }}</span></p></mat-radio-button>
-          </div>
-          <p class="text-gray-600">JORNADA: <span class="font-bold">{{ match.jornada[1] }}</span></p>
-          <p class="text-gray-600">ESTADO: <span class="text-green-600 font-bold">{{ match.vigencia }}</span></p>
-        </mat-card-content>
-        <mat-card-actions class="flex justify-center mt-4">
-          <button mat-button class="bg-teal-500 text-white hover:bg-teal-600 font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
-            Guardar
-          </button>
-        </mat-card-actions>
-      </mat-card>
+  <form [formGroup]="formMatches" (ngSubmit)="sendData()" autocomplete="off">
+    <div *ngIf="matches.length > 0" formArrayName="subMatches" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div *ngFor="let matchControl of subMatches().controls; let i=index" [formGroupName]="i" class="mb-4">
+        <mat-card class="bg-white hover:bg-gray-100 transition duration-300 ease-in-out">
+          <mat-card-content class="bg-white">
+            <p class="text-green-700 font-bold">FECHA PARTIDO: <span class="text-gray-800">{{ matchControl.value.fechaCadena }}</span></p>
+            <div class="my-2">
+              <mat-radio-group formControlName="apostoPor">
+                <mat-radio-button [value]="matchControl.value.codEquipo1" [checked]="matchControl.value.apostoPor === matchControl.value.codEquipo1" [disabled]="isPast(matchControl.value.vigencia)">
+                  <p class="text-blue-600 font-bold">EQUIPO A: <span class="text-gray-800">{{ matchControl.value.equipo1 }}</span></p>
+                </mat-radio-button>
+                <mat-radio-button [value]="0" [checked]="matchControl.value.apostoPor === '0' " [disabled]="isPast(matchControl.value.vigencia)">
+                  <p class="text-red-600 font-bold">EMPATE: <span class="text-gray-800">{{ matchControl.value.empate }}</span></p>
+                </mat-radio-button>
+                <mat-radio-button [value]="matchControl.value.codEquipo2" [checked]="matchControl.value.apostoPor === matchControl.value.codEquipo2" [disabled]="isPast(matchControl.value.vigencia)">
+                  <p class="text-blue-600 font-bold">EQUIPO B: <span class="text-gray-800">{{ matchControl.value.equipo2 }}</span></p>
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+            <p class="text-gray-600">JORNADA: <span class="font-bold">{{ matchControl.value.jornada[1] }}</span></p>
+            <p class="text-gray-600">ESTADO: <span class="text-green-600 font-bold">{{ matchControl.value.vigencia }}</span></p>
+          </mat-card-content>
+          <mat-card-actions class="flex justify-center mt-4">
+            <button *ngIf="!isPast(matchControl.value.vigencia)" mat-button type="submit" class="bg-teal-500 text-white hover:bg-teal-600 font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
+              Guardar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
     </div>
-  </div>
+  </form>
   <div *ngIf="error" class="text-red-500 text-center mt-4">
     <p>{{ error }}</p>
   </div>

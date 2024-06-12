@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { LayoutComponent } from './layout/Layout.component';
 import { Bet_cockComponent } from './polla/pages/bet_cock/bet_cock.component';
@@ -24,6 +25,7 @@ import { SharedModule } from './shared/shared.module';
     ],
     imports: [
         CommonModule,
+        ReactiveFormsModule,
         ProtectedRoutingModule,
         SharedModule,
         MaterialModule,

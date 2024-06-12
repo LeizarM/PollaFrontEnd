@@ -36,6 +36,7 @@ export class LoginComponent {
         const { user } = resp;
         if (user != null && user.codUsuario > 0 ) {
 
+          localStorage.setItem('user', JSON.stringify(user));
           this.router.navigate(["./polla/tournament"]);
 
         } else {

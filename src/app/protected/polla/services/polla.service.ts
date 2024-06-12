@@ -33,13 +33,14 @@ export class PollaService {
       );
   }
 
-  getMatchesXTorunament(codTorneo: number): Observable<any[]> {
+  getMatchesXTorunament(codTorneo: number, codParticipante : number): Observable<any[]> {
 
     const url = `${this.baseUrl}/api/polla/matches`;
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
 
     const data = {
-      "codTorneo": codTorneo
+      "codTorneo": codTorneo,
+      "codParticipante": codParticipante
     };
 
     return this.http.post<any[]>(url, data, { headers })
@@ -54,4 +55,28 @@ export class PollaService {
         })
       );
   }
+
+
+  submitBet(codParticipante: number, codPartido: number, apuesta: number): Observable<any> {
+    const url = `${this.baseUrl}/api/polla/bet`;
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+
+    const data = {
+      codParticipante,
+      codPartido,
+      apuesta,
+    };
+
+    return this.http.post<any>(url, data, { headers })
+      .pipe(
+        map(response => response),
+        catchError(error => {
+          console.error('Error submitting bet:', error);
+          return throwError('Error submitting bet');
+        })
+      );
+  }
+
+
+
 }
