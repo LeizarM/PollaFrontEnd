@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { LoginService } from '../../services/login.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private loginService : LoginService
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
@@ -22,11 +24,30 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    /*if (this.loginForm.valid) {
-      console.log(this.loginForm.value);
-      // Aquí puedes manejar el envío del formulario
+    if ( this.loginForm.invalid )  {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+    const { username, password } = this.loginForm.value; //desestructuracion del objecto form
 
-    }*/
-      this.router.navigate(["./polla/tournament"]);
+
+    this.loginService.verificarLogin(username, password).subscribe({
+      next: (resp) => {
+        const { user } = resp;
+        if (user != null && user.codUsuario > 0 ) {
+
+          this.router.navigate(["./polla/tournament"]);
+
+        } else {
+          //this.hayError = true;
+        }
+      },
+      error: (err) => {
+        if (err.status === 400) {
+          console.log("error de credenciales");
+        }
+      },
+    });
+
   }
 }

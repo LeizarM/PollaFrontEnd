@@ -1,0 +1,30 @@
+<div class="container mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-4 text-center">Partidos del Torneo {{ codTorneo }}</h2>
+  <div *ngIf="matches.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let match of matches" class="mb-4">
+      <mat-card class="bg-white hover:bg-gray-100 transition duration-300 ease-in-out">
+        <mat-card-content class="bg-white">
+          <p class="text-green-700 font-bold">FECHA PARTIDO: <span class="text-gray-800">{{ match.fechaCadena }}</span></p>
+          <div class="my-2">
+            <mat-radio-button  [name]="'radioGroup[' + match.codPartido  + ']'"   value="{{match.codEquipo1}}"> <p class="text-blue-600 font-bold">EQUIPO A: <span class="text-gray-800">{{ match.equipo1 }}</span></p></mat-radio-button>
+            <mat-radio-button  [name]="'radioGroup[' +  match.codPartido + ']'"   value="0"> <p class="text-red-600 font-bold">EMPATE: <span class="text-gray-800">{{match.empate}}</span></p></mat-radio-button>
+            <mat-radio-button  [name]="'radioGroup[' +  match.codPartido + ']'"   value="{{match.codEquipo2}}"> <p class="text-blue-600 font-bold">EQUIPO B: <span class="text-gray-800">{{ match.equipo2 }}</span></p></mat-radio-button>
+          </div>
+          <p class="text-gray-600">JORNADA: <span class="font-bold">{{ match.jornada[1] }}</span></p>
+          <p class="text-gray-600">ESTADO: <span class="text-green-600 font-bold">{{ match.vigencia }}</span></p>
+        </mat-card-content>
+        <mat-card-actions class="flex justify-center mt-4">
+          <button mat-button class="bg-teal-500 text-white hover:bg-teal-600 font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
+            Guardar
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+  <div *ngIf="error" class="text-red-500 text-center mt-4">
+    <p>{{ error }}</p>
+  </div>
+  <div *ngIf="matches.length === 0 && !error" class="text-gray-600 text-center mt-4">
+    <p>No hay partidos disponibles para este torneo.</p>
+  </div>
+</div>
