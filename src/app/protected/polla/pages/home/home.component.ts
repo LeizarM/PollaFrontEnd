@@ -18,12 +18,27 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getAllTournament();
+
+
+
+    const userString = localStorage.getItem('user');
+
+    // Verificar si el objeto user existe en el localStorage
+    if (userString) {
+      const user = JSON.parse(userString);
+      const codTorneo = user.codTorneo;
+      this.getAllTournament(codTorneo);
+    } else {
+      console.log('Usuario no encontrado en localStorage');
+    }
+
+
+
   }
 
-  getAllTournament():void {
+  getAllTournament( codTorneo : number):void {
 
-    this.pollaService.getAllTournaments().subscribe({
+    this.pollaService.getAllTournaments (codTorneo).subscribe({
       next: (data) => this.tournaments = data,
       error: (err) => this.error = err.message
     });
@@ -33,10 +48,20 @@ export class HomeComponent implements OnInit {
 
   goToTournament( codTorneo : number ):void{
 
-
-
     this.router.navigate(['/polla/matches', codTorneo]);
 
   }
+
+
+  goToBeets( codTorneo : number ) :void {
+
+    this.router.navigate(['/polla/see_bets', codTorneo]);
+  }
+
+  goToMissingBeets(  codTorneo : number ) : void {
+
+    this.router.navigate(['/polla/betting_missing', codTorneo]);
+  }
+
 
 }

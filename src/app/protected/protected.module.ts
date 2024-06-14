@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { LayoutComponent } from './layout/Layout.component';
+import { AlertsComponent } from './polla/pages/alerts/alerts.component';
 import { Bet_cockComponent } from './polla/pages/bet_cock/bet_cock.component';
 import { Betting_missingComponent } from './polla/pages/betting_missing/betting_missing.component';
 import { ChangePasswordComponent } from './polla/pages/change-password/change-password.component';
@@ -21,7 +22,8 @@ import { SharedModule } from './shared/shared.module';
         Bet_cockComponent,
         Betting_missingComponent,
         ChangePasswordComponent,
-        See_betsComponent
+        See_betsComponent,
+        AlertsComponent
     ],
     imports: [
         CommonModule,
@@ -30,6 +32,9 @@ import { SharedModule } from './shared/shared.module';
         SharedModule,
         MaterialModule,
 
+    ],
+    exports: [
+      AlertsComponent
     ]
 })
 export class ProtectedModule { }

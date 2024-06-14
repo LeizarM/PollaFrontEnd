@@ -30,11 +30,11 @@ const routes: Routes = [
         component: Bet_cockComponent
       },
       {
-        path: 'see_bets',
+        path: 'see_bets/:codTorneo',
         component: See_betsComponent
       },
       {
-        path: 'betting_missing',
+        path: 'betting_missing/:codTorneo',
         component: Betting_missingComponent
       },
       {

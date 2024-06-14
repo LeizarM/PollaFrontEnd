@@ -1,3 +1,27 @@
-<p>
-  see_bets works!
-</p>
+<div class="container mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-4 text-center">TABLA DE APUESTAS</h2>
+  <p class="mb-4 text-center">En esta tabla se mostrarán los resultados por jornada</p>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white dark:bg-gray-800">
+      <thead>
+        <tr class="w-full bg-gray-700 text-white">
+          <th class="px-4 py-2">#</th>
+          <th class="px-4 py-2">Nombre</th>
+          <th *ngFor="let key of jornadas" class="px-4 py-2">J{{ key }}</th>
+          <th class="px-4 py-2">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let participant of seeBeet; let i = index" class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
+          <td class="border px-4 py-2">{{ i + 1 }}</td>
+          <td class="border px-4 py-2">{{ participant.nombreCompleto }}</td>
+          <td *ngFor="let key of jornadas" class="border px-4 py-2">{{ participant[key] !== null ? participant[key] : 0 }}</td>
+          <td class="border px-4 py-2">{{ participant.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="error" class="text-red-500 text-center mt-4">
+    <p>{{ error }}</p>
+  </div>
+</div>

@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { PollaService } from '../../services/polla.service';
 
 @Component({
@@ -13,6 +15,8 @@ export class MatchesComponent implements OnInit, AfterViewInit {
   codTorneo!: number;
   matches: any[] = [];
   error: string | null = null;
+  alertMessage: string | null = null;
+  alertType: 'success' | 'error' = 'success';
   formMatches: FormGroup;
 
   constructor(
@@ -34,28 +38,17 @@ export class MatchesComponent implements OnInit, AfterViewInit {
 
     // Verificar si el objeto user existe en el localStorage
     if (userString) {
-      // Parsear el JSON string a un objeto
       const user = JSON.parse(userString);
-
-      // Acceder a la propiedad codParticipante
       const codParticipante = user.codParticipante;
-
-      // Hacer algo con el codParticipante, por ejemplo, imprimirlo en consola
       this.obtenerMatchesXTournament(this.codTorneo, codParticipante);
     } else {
-      // Manejar el caso en el que el objeto user no esté en el localStorage
       console.log('Usuario no encontrado en localStorage');
     }
-
-
-
-
   }
 
   obtenerMatchesXTournament(codTorneo: number, codParticipante: number): void {
     this.pollaService.getMatchesXTorunament(codTorneo, codParticipante).subscribe({
       next: (data) => {
-        console.log(data);
         this.matches = data;
         this.createForm();
       },
@@ -64,7 +57,8 @@ export class MatchesComponent implements OnInit, AfterViewInit {
   }
 
   createForm(): void {
-    const subMatchesArray = this.formMatches.get('subMatches') as FormArray;
+    const subMatchesArray = this.subMatches();
+    subMatchesArray.clear(); // Limpiar el FormArray antes de agregar nuevos elementos
     this.matches.forEach(match => {
       const matchGroup = this.fb.group({
         codPartido: [match.codPartido],
@@ -87,40 +81,66 @@ export class MatchesComponent implements OnInit, AfterViewInit {
     return this.formMatches.get('subMatches') as FormArray;
   }
 
-  sendData(): void {
+  sendSingleData(index: number): void {
     const userString = localStorage.getItem('user');
 
-    // Verificar si el objeto user existe en el localStorage
     if (userString) {
-      // Parsear el JSON string a un objeto
       const user = JSON.parse(userString);
-
-      // Acceder a la propiedad codParticipante
       const codParticipante = user.codParticipante;
-      const formValues = this.formMatches.value.subMatches;
-      formValues.forEach((match: any) => {
-        console.log(`Partido ${match.codPartido}: Selección - ${match.apostoPor}`);
-        this.pollaService.submitBet(codParticipante, match.codPartido, match.apostoPor).subscribe({
-          next: (response) => {
-            console.log(`Apuesta registrada para el partido ${match.codPartido}`);
-          },
-          error: (err) => {
-            console.error(`Error registrando la apuesta para el partido ${match.codPartido}:`, err);
+      const matchControl = this.subMatches().at(index).value;
+
+      this.pollaService.expire(matchControl.codPartido).pipe(
+        tap(vigencia => {
+          console.log(`Partido ${matchControl.codPartido} expirado response es  ====> ${vigencia}`);
+        }),
+        switchMap(vigencia => {
+          if (vigencia === 1) {
+            return this.pollaService.submitBet(codParticipante, matchControl.codPartido, matchControl.apostoPor);
+          } else {
+            console.log(`Partido ${matchControl.codPartido} no expirado, no se puede realizar la apuesta.`);
+            this.alertMessage = `Partido ${matchControl.codPartido} no expirado, no se puede realizar la apuesta.`;
+            this.alertType = 'error';
+            this.showAlert();
+            return of(null); // Devuelve un observable vacío
           }
-        });
+        })
+      ).subscribe({
+        next: (response) => {
+          if (response) {
+            this.alertMessage = `Apuesta registrada para el partido ${matchControl.equipo1} vs ${matchControl.equipo2}`;
+            this.alertType = 'success';
+            this.showAlert();
+            console.log(`Apuesta registrada para el partido ${matchControl.codPartido}`);
+          }
+        },
+        error: (err) => {
+          this.alertMessage = `Error registrando la apuesta para el partido ${matchControl.codPartido}: ${err.message}`;
+          this.alertType = 'error';
+          this.showAlert();
+          console.error(`Error registrando la apuesta para el partido ${matchControl.codPartido}:`, err);
+        }
       });
-
     }
-
-
-
   }
 
+  showAlert(): void {
+    setTimeout(() => {
+      this.alertMessage = null;
+      this.alertType = 'success';
+      this.reloadMatches();
+    }, 3000);
+  }
+
+  reloadMatches(): void {
+    const userString = localStorage.getItem('user');
+    if (userString) {
+      const user = JSON.parse(userString);
+      const codParticipante = user.codParticipante;
+      this.obtenerMatchesXTournament(this.codTorneo, codParticipante);
+    }
+  }
 
   isPast(vigencia: string): boolean {
     return vigencia !== 'VIGENTE';
   }
-
-
-
 }
